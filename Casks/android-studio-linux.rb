@@ -9,7 +9,7 @@ cask "android-studio-linux" do
 
   livecheck do
     url "https://developer.android.com/studio/releases"
-    regex(/android-studio-(\d+(?:\.\d+)+)-linux\.tar\.gz/i)
+    regex(%r{href=.*?/ide-zips/(\d+(?:\.\d+)+)/android-studio-.*?\.tar\.gz}i)
   end
 
   binary "android-studio/bin/studio"
@@ -46,8 +46,7 @@ cask "android-studio-linux" do
     "~/.android",
     "~/.config/Google/AndroidStudio#{version.major_minor}",
     "~/.local/share/Google/AndroidStudio#{version.major_minor}",
-    "~/.cache/Google/AndroidStudio#{version.major_minor}",
-    "~/AndroidStudioProjects",
+    "~/.cache/Google/AndroidStudio#{version.major_minor}", 
   ]
 
   caveats <<~EOS
