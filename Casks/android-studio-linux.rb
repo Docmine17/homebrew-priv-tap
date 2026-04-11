@@ -1,15 +1,20 @@
 cask "android-studio-linux" do
-  version "2025.3.2.6"
+  version "2025.3.2.6,panda2"
   sha256 "32942d8cd7688192cf3cd07bf282fb120035b9bd9b56e6f13c5540e6d39807e9"
 
-  url "https://dl.google.com/dl/android/studio/ide-zips/#{version}/android-studio-panda2-linux.tar.gz"
+  url "https://dl.google.com/dl/android/studio/ide-zips/#{version.csv.first}/android-studio#{"-#{version.csv.second}" if version.csv.second}-linux.tar.gz"
   name "Android Studio"
   desc "The official Android IDE (Stable branch)"
   homepage "https://developer.android.com/studio"
 
   livecheck do
     url "https://developer.android.com/studio/releases"
-    regex(%r{href=.*?/ide-zips/(\d+(?:\.\d+)+)/android-studio-.*?\.tar\.gz}i)
+    regex(%r{href=.*?/ide-zips/(\d+(?:\.\d+)+)/android[._-]studio(?:[._-]([^"' >]+))?[._-]linux\.tar\.gz}i)
+    strategy :page_match do |page, regex|
+      page.scan(regex).map do |match|
+        match[1].present? ? "#{match[0]},#{match[1]}" : match[0]
+      end
+    end
   end
 
   binary "android-studio/bin/studio"
