@@ -7,7 +7,7 @@ on:
         description: Custom list of casks to livecheck and bump if outdated
         required: false
   schedule:
-    # Every 3 hours 23 minutes past the hour
+    # Every sunday at 00:00
     - cron: "0 0 * * 0"
 
 permissions:
