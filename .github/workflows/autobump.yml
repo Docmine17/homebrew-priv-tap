@@ -44,5 +44,5 @@ jobs:
           if [[ -n "${CASKS-}" ]]; then
             xargs "${BREW_BUMP[@]}" <<<"${CASKS}"
           else
-            "${BREW_BUMP[@]}" --auto --tap=Docmine17/priv-tap
+            "${BREW_BUMP[@]}" --tap=Docmine17/homebrew-priv-tap --eval-all
           fi
