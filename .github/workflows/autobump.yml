@@ -9,19 +9,11 @@ jobs:
   bump:
     runs-on: ubuntu-latest
     steps:
-      # Esse plugin substitui o robô oficial falho do Homebrew.
-      # É o padrão Ouro da comunidade para contornar esses erros que a ferramenta nativa causa no Github Actions.
       - name: Rodar Bump do Cask
-        uses: dawidd6/action-homebrew-bump-cask@v3
+        # Aqui usamos o macauley que é o porte da comunidade específico para Casks!
+        uses: macauley/action-homebrew-bump-cask@v1.0.12
         with:
-          # O token para permitir criação de Pull Requests:
           token: ${{ secrets.GITHUB_TOKEN }}
-          
-          # O repositório privado onde o arquivo Cask está:
           tap: docmine17/homebrew-priv-tap
-          
-          # Nome do arquivo base (sem .rb)
           cask: android-studio-linux
-          
-          # Diz ao bot para usar a mágica do seu livecheck para caçar a versão
           livecheck: true
