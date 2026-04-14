@@ -5,7 +5,10 @@ on:
     # Executa todos os dias à meia-noite UTC (~21:00 no Brasil)
     - cron: '0 0 * * *'
   workflow_dispatch:
-    # Permite disparar o workflow manualmente pela aba Actions do GitHub
+    inputs:
+      casks:
+        description: 'Lista customizada de casks separados por espaço (ex: android-studio-linux devtoys)'
+        required: false
 
 jobs:
   bump:
@@ -13,22 +16,56 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
+    env:
+      HOMEBREW_DEVELOPER: 1
     steps:
       - name: Checar o repositório
         uses: actions/checkout@v4
 
       - name: Configurar o Homebrew
         uses: Homebrew/actions/setup-homebrew@master
+        with:
+          core: false
+          cask: true
+          test-bot: false
 
       - name: Instalar dependências de desenvolvedor do Homebrew
         run: brew install-bundler-gems
 
-      # A action abaixo é amplamente usada pela comunidade do Homebrew 
-      # para buscar atualizações usando o `livecheck` e gerar um Pull Request 
-      # com as alterações de versão e sha256 atualizadas.
-      - name: Atualizar android-studio-linux
-        uses: macauley/action-homebrew-bump-cask@v1
+      - name: Configurar Tap do Homebrew
+        run: |
+          # Homebrew exige que o workflow rode "dentro" do tap mapeado corretamente
+          # Extrai o nome do repositório em lowercase (ex: docmine17/homebrew-priv-tap)
+          REPO_LOWER="${GITHUB_REPOSITORY,,}"
+          
+          # Cria o link simbólico engenhando a pasta correta
+          TAP_DIR="$(brew --repository)/Library/Taps/$REPO_LOWER"
+          mkdir -p "$(dirname "$TAP_DIR")"
+          ln -s "$GITHUB_WORKSPACE" "$TAP_DIR"
+
+      - name: Configurar usuário Git
+        uses: Homebrew/actions/git-user-config@master
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          cask: android-studio-linux
-          livecheck: true
+          username: "github-actions[bot]"
+
+      - name: Executar autobump
+        env:
+          # Usamos o token nativo do GitHub Actions para criar os testes e Commits
+          HOMEBREW_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CASKS: ${{ inputs.casks }}
+        run: |
+          # Transforma docmine17/homebrew-priv-tap em docmine17/priv-tap
+          TAP_NAME=$(echo "${GITHUB_REPOSITORY,,}" | sed 's/homebrew-//')
+          
+          # --no-fork: Cria o PR na própria branch do repo de origem em vez de um repositório forked
+          # --open-pr: Cria o Pull Request
+          # --casks: Permite trabalhar apenas com o Casks
+          BREW_BUMP=(brew bump --no-fork --open-pr --casks)
+          
+          if [[ -n "${CASKS-}" ]]; then
+            echo "Rodando bump isolado para: $CASKS"
+            xargs "${BREW_BUMP[@]}" <<<"${CASKS}"
+          else
+            echo "Rodando bump automático na tap: $TAP_NAME"
+            "${BREW_BUMP[@]}" --auto --tap="$TAP_NAME"
+          fi
