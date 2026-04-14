@@ -9,8 +9,13 @@ jobs:
   bump:
     runs-on: ubuntu-latest
     steps:
+      - name: Baixar código fonte
+        uses: actions/checkout@v4
+
+      - name: Instalar Homebrew no Servidor do Github
+        uses: Homebrew/actions/setup-homebrew@master
+
       - name: Rodar Bump do Cask
-        # Aqui usamos o macauley que é o porte da comunidade específico para Casks!
         uses: macauley/action-homebrew-bump-cask@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
