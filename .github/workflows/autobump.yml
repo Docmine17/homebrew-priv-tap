@@ -2,25 +2,26 @@ name: Automatizar Bot do Homebrew
 
 on:
   schedule:
-    # O Github roda isso em seus próprios servidores todo dia
     - cron: '0 3 * * *'
-  workflow_dispatch: # Adiciona um botão pra você rodar na página do Github
+  workflow_dispatch:
 
 jobs:
   bump:
     runs-on: ubuntu-latest
     steps:
-      - name: Baixar o código do seu projeto
-        uses: actions/checkout@v4
-
-      - name: Preparar o Homebrew do Github Servers
-        uses: Homebrew/actions/setup-homebrew@master
-
-      - name: Executar o Autopiloto Nativo do Brew
-        run: |
-          # A mágica oficial está neste exato comando usando --open-pr
-          # Ele executa o livecheck e se algo novo surgir, o brew roda o Ruby, extrai o sha256 e abre um PR pra você clicar em "Aceitar"!
-          brew bump --open-pr --cask docmine17/priv-tap/android-studio-linux
-        env:
-          # O Brew precisa da senha pra criar Pull Requests em nome do Github Actions
-          HOMEBREW_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # Esse plugin substitui o robô oficial falho do Homebrew.
+      # É o padrão Ouro da comunidade para contornar esses erros que a ferramenta nativa causa no Github Actions.
+      - name: Rodar Bump do Cask
+        uses: dawidd6/action-homebrew-bump-cask@v3
+        with:
+          # O token para permitir criação de Pull Requests:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          
+          # O repositório privado onde o arquivo Cask está:
+          tap: docmine17/homebrew-priv-tap
+          
+          # Nome do arquivo base (sem .rb)
+          cask: android-studio-linux
+          
+          # Diz ao bot para usar a mágica do seu livecheck para caçar a versão
+          livecheck: true
