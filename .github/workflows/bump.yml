@@ -20,6 +20,9 @@ jobs:
       - name: Configurar o Homebrew
         uses: Homebrew/actions/setup-homebrew@master
 
+      - name: Instalar dependências de desenvolvedor do Homebrew
+        run: brew install-bundler-gems
+
       # A action abaixo é amplamente usada pela comunidade do Homebrew 
       # para buscar atualizações usando o `livecheck` e gerar um Pull Request 
       # com as alterações de versão e sha256 atualizadas.
