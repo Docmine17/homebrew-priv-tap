@@ -1,10 +1,10 @@
 cask "android-studio-linux" do
-  version "2025.3.2.6,panda2"
-  sha256 "32942d8cd7688192cf3cd07bf282fb120035b9bd9b56e6f13c5540e6d39807e9"
+  version "2025.3.3.6,panda3"
+  sha256 "341ac0fc17dbc987d0530e0cfb327125480533d6733a889f2137636becd486a5"
 
   url "https://dl.google.com/dl/android/studio/ide-zips/#{version.csv.first}/android-studio#{"-#{version.csv.second}" if version.csv.second}-linux.tar.gz"
   name "Android Studio"
-  desc "The official Android IDE (Stable branch)"
+  desc "Official Android IDE (Stable branch)"
   homepage "https://developer.android.com/studio"
 
   livecheck do
@@ -49,9 +49,9 @@ cask "android-studio-linux" do
 
   zap trash: [
     "~/.android",
+    "~/.cache/Google/AndroidStudio#{version.major_minor}",
     "~/.config/Google/AndroidStudio#{version.major_minor}",
     "~/.local/share/Google/AndroidStudio#{version.major_minor}",
-    "~/.cache/Google/AndroidStudio#{version.major_minor}", 
   ]
 
   caveats <<~EOS
