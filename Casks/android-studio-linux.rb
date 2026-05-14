@@ -1,6 +1,6 @@
 cask "android-studio-linux" do
-  version "2025.3.4.6,panda4"
-  sha256 "32a7ff09acaa38b48d61c8882bee7e213022a8ba0d1f16c0073380facb509fd3"
+  version "2025.3.4.7,panda4-patch1"
+  sha256 "aae8f332f124afd23ca495dc770915a456da7480c8f859e01535ad42fcb4ca06"
 
   url "https://dl.google.com/dl/android/studio/ide-zips/#{version.csv.first}/android-studio#{"-#{version.csv.second}" if version.csv.second}-linux.tar.gz"
   name "Android Studio"
